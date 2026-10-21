@@ -17,5 +17,28 @@ class TestTasks(unittest.TestCase):
         self.assertEqual(pendientes(tareas), [])
 
 
+class TestCategorias(unittest.TestCase):
+    def test_categoria_valida(self):
+        tareas = []
+        tarea = agregar_tarea(tareas, "Preparar laboratorio", "Laboratorio")
+        self.assertEqual(tarea["categoria"], "Laboratorio")
+
+    def test_categoria_vacia(self):
+        tareas = []
+        with self.assertRaises(ValueError):
+            agregar_tarea(tareas, "Sin categoría", "   ")
+        self.assertEqual(tareas, [])
+
+    def test_filtrado_por_categoria_sin_distinguir_mayusculas(self):
+        tareas = []
+        agregar_tarea(tareas, "Estudiar", "Estudio")
+        agregar_tarea(tareas, "Preparar", "Laboratorio")
+        agregar_tarea(tareas, "Exponer", "LABORATORIO")
+
+        resultado = pendientes(tareas, "laboratorio")
+
+        self.assertEqual([t["titulo"] for t in resultado], ["Preparar", "Exponer"])
+
+
 if __name__ == "__main__":
     unittest.main()
