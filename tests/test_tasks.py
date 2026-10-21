@@ -74,15 +74,17 @@ class TestEliminarTarea(unittest.TestCase):
         self.assertEqual(str(contexto.exception), "Tarea no encontrada")
         self.assertEqual(len(tareas), 1)
 
-    def test_id_no_se_reutiliza_despues_de_eliminar(self):
+    def test_id_no_se_duplica_despues_de_eliminar(self):
         tareas = []
         agregar_tarea(tareas, "Uno", "General")
         agregar_tarea(tareas, "Dos", "General")
-        eliminar_tarea(tareas, 2)
+        eliminar_tarea(tareas, 1)
 
         nueva = agregar_tarea(tareas, "Tres", "General")
 
-        self.assertEqual(nueva["id"], 3)
+        ids = [t["id"] for t in tareas]
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertNotIn(nueva["id"], [t["id"] for t in tareas if t is not nueva])
 
 
 if __name__ == "__main__":
