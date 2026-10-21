@@ -1,6 +1,6 @@
 import unittest
 
-from tasks import agregar_tarea, completar_tarea, pendientes
+from tasks import agregar_tarea, completar_tarea, eliminar_tarea, pendientes
 
 
 class TestTasks(unittest.TestCase):
@@ -50,6 +50,41 @@ class TestCategorias(unittest.TestCase):
         agregar_tarea(tareas, "Estudiar", "Estudio")
 
         self.assertEqual(pendientes(tareas, "   "), [])
+
+
+class TestEliminarTarea(unittest.TestCase):
+    def test_eliminar_tarea_existente(self):
+        tareas = []
+        agregar_tarea(tareas, "Estudiar", "Estudio")
+        agregar_tarea(tareas, "Preparar", "Laboratorio")
+
+        eliminada = eliminar_tarea(tareas, 1)
+
+        self.assertEqual(eliminada["titulo"], "Estudiar")
+        self.assertEqual([t["id"] for t in tareas], [2])
+        self.assertEqual(pendientes(tareas, "Estudio"), [])
+
+    def test_eliminar_tarea_inexistente(self):
+        tareas = []
+        agregar_tarea(tareas, "Estudiar", "Estudio")
+
+        with self.assertRaises(ValueError) as contexto:
+            eliminar_tarea(tareas, 99)
+
+        self.assertEqual(str(contexto.exception), "Tarea no encontrada")
+        self.assertEqual(len(tareas), 1)
+
+    def test_id_no_se_duplica_despues_de_eliminar(self):
+        tareas = []
+        agregar_tarea(tareas, "Uno", "General")
+        agregar_tarea(tareas, "Dos", "General")
+        eliminar_tarea(tareas, 1)
+
+        nueva = agregar_tarea(tareas, "Tres", "General")
+
+        ids = [t["id"] for t in tareas]
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertNotIn(nueva["id"], [t["id"] for t in tareas if t is not nueva])
 
 
 if __name__ == "__main__":
