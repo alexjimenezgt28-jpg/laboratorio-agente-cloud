@@ -39,6 +39,18 @@ class TestCategorias(unittest.TestCase):
 
         self.assertEqual([t["titulo"] for t in resultado], ["Preparar", "Exponer"])
 
+    def test_filtrado_categoria_inexistente_devuelve_lista_vacia(self):
+        tareas = []
+        agregar_tarea(tareas, "Estudiar", "Estudio")
+
+        self.assertEqual(pendientes(tareas, "Cocina"), [])
+
+    def test_filtrado_categoria_en_blanco_devuelve_lista_vacia(self):
+        tareas = []
+        agregar_tarea(tareas, "Estudiar", "Estudio")
+
+        self.assertEqual(pendientes(tareas, "   "), [])
+
 
 if __name__ == "__main__":
     unittest.main()
